@@ -1,0 +1,732 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>CharityAPI Documentation</title>
+
+    <link href="stylesheets/screen.css" rel="stylesheet" media="screen" />
+    <link href="stylesheets/print.css" rel="stylesheet" media="print" />
+    <style>
+      .highlight table td { padding: 5px; }
+.highlight table pre { margin: 0; }
+.highlight, .highlight .w {
+  color: #f8f8f2;
+  background-color: #272822;
+}
+.highlight .err {
+  color: #151515;
+  background-color: #ac4142;
+}
+.highlight .c, .highlight .cd, .highlight .cm, .highlight .c1, .highlight .cs {
+  color: #505050;
+}
+.highlight .cp {
+  color: #f4bf75;
+}
+.highlight .nt {
+  color: #f4bf75;
+}
+.highlight .o, .highlight .ow {
+  color: #d0d0d0;
+}
+.highlight .p, .highlight .pi {
+  color: #d0d0d0;
+}
+.highlight .gi {
+  color: #90a959;
+}
+.highlight .gd {
+  color: #ac4142;
+}
+.highlight .gh {
+  color: #6a9fb5;
+  background-color: #151515;
+  font-weight: bold;
+}
+.highlight .k, .highlight .kn, .highlight .kp, .highlight .kr, .highlight .kv {
+  color: #aa759f;
+}
+.highlight .kc {
+  color: #d28445;
+}
+.highlight .kt {
+  color: #d28445;
+}
+.highlight .kd {
+  color: #d28445;
+}
+.highlight .s, .highlight .sb, .highlight .sc, .highlight .sd, .highlight .s2, .highlight .sh, .highlight .sx, .highlight .s1 {
+  color: #90a959;
+}
+.highlight .sr {
+  color: #75b5aa;
+}
+.highlight .si {
+  color: #8f5536;
+}
+.highlight .se {
+  color: #8f5536;
+}
+.highlight .nn {
+  color: #f4bf75;
+}
+.highlight .nc {
+  color: #f4bf75;
+}
+.highlight .no {
+  color: #f4bf75;
+}
+.highlight .na {
+  color: #6a9fb5;
+}
+.highlight .m, .highlight .mf, .highlight .mh, .highlight .mi, .highlight .il, .highlight .mo, .highlight .mb, .highlight .mx {
+  color: #90a959;
+}
+.highlight .ss {
+  color: #90a959;
+}
+    </style>
+      <script src="javascripts/all.js"></script>
+  </head>
+
+  <body class="index" data-languages="[&quot;python&quot;,&quot;ruby&quot;]">
+    <a href="#" id="nav-button">
+      <span>
+        NAV
+        <img src="images/navbar.png" />
+      </span>
+    </a>
+    <div class="tocify-wrapper">
+      <img src="images/logo.png" />
+        <div class="lang-selector">
+              <a href="#" data-language-name="python">python</a>
+              <a href="#" data-language-name="ruby">ruby</a>
+        </div>
+        <div class="search">
+          <input type="text" class="search" id="input-search" placeholder="Search">
+        </div>
+        <ul class="search-results"></ul>
+      <div id="toc">
+      </div>
+        <ul class="toc-footer">
+            <li><a href='#'>Sign Up for a Developer Key</a></li>
+            <li><a href='https://github.com/tripit/slate'>Documentation Powered by Slate</a></li>
+        </ul>
+    </div>
+    <div class="page-wrapper">
+      <div class="dark-box"></div>
+      <div class="content">
+        <h1 id="introduction">Introduction</h1>
+
+<p>Welcome to CharityAPI. This API connects you to several IRS datasets on nonprofit organizations. It updates biweekly, to provide the most up-to-date information, in the most convenient way possible, freeing nonprofits to spend their time and resources on their mission.</p>
+
+<h1 id="what-can-i-do-with-this-data">What can I do with this data?</h1>
+
+<p>CharityAPI makes it easy for non-profits, groups supporting non-profits, and grant dispersing organizations to verify the the status of non-profit organizations. It also provides a tool to do analyses on spending across charitable sectors.
+-Authenticate clients and users as non-profit organizations real-time
+-Assess spending in different non-profit sectors
+-Look at the geographical distribution of spending
+-Collect longitudinal data on assets and revenues</p>
+
+<h1 id="data-sources">Data Sources</h1>
+
+<p><strong>All data come from the Internal Revenue Service.</strong></p>
+
+<ul>
+<li><p><a href='https://github.com/tripit/slate'>
+Documentation on many of the data elements</a></p></li>
+<li><p><a href='https://www.irs.gov/Charities-&-Non-Profits/Exempt-Organizations-Business-Master-File-Extract-EO-BMF'>
+Organization-data</a></p></li>
+<li><p><a href='https://apps.irs.gov/app/eos/pub78Search.do?searchChoice=ePostcard&dispatchMethod=selectSearch'>
+IRS Exempt Organizations Select Check </a></p></li>
+</ul>
+
+<h1 id="authentication">Authentication</h1>
+
+<p>CharityAPI is currently open, but you will soon need an API keys to access the API. You will be able to register for a new key at our <a href="http://charityapi.org/developers">developer portal</a>.</p>
+
+<p>Use the API key in all API requests to the server as a parameter that looks like the following:</p>
+
+<p><code class="prettyprint">Authorization: your_key_here</code></p>
+
+<aside class="notice">
+You must replace <code>your_key_here</code> with your personal API key.
+</aside>
+
+<h1 id="look-up-an-ein">Look up an EIN</h1>
+
+<p>The API currently allows you to look up a single ein at a time, and returns a json with all available data for that organization. Fields are listed in the data section of this documentation. To batch process, iterate through a list of ein strings. </p>
+
+<p>The http request is: https://charityapi.org/api/<ein></p>
+<pre class="highlight ruby"><code>
+<span class="nb">require</span> <span class="s1">'rest_client'</span>
+<span class="no">EIN_Data</span> <span class="o">=</span> <span class="no">RestClient</span><span class="p">.</span><span class="nf">get</span> <span class="s1">'http://charityapi.org/api/363673599'</span> 
+
+
+</code></pre>
+<pre class="highlight python"><code><span class="kn">import</span> <span class="nn">requests</span>
+
+<span class="n">url</span><span class="o">=</span><span class="s">'http://charityapi.org/api/'</span>
+
+<span class="n">ein</span><span class="o">=</span><span class="s">'363673599'</span>
+
+<span class="n">EIN_Data</span><span class="o">=</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="o">+</span><span class="n">ein</span><span class="p">)</span>
+
+
+</code></pre>
+
+<blockquote>
+<p>The above command returns JSON structured like this, but with more fields:</p>
+</blockquote>
+<pre class="highlight json"><code><span class="p">[</span><span class="w">
+  </span><span class="p">{</span><span class="w">
+    </span><span class="nt">"ein"</span><span class="p">:</span><span class="w"> </span><span class="mi">363673599</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="err">'Feed</span><span class="w"> </span><span class="err">America'</span><span class="w">
+    </span><span class="s2">"exempt"</span><span class="err">:</span><span class="w"> </span><span class="err">'y'</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">]</span><span class="w">
+</span></code></pre>
+
+<h1 id="forthcoming-functionality">Forthcoming functionality</h1>
+
+<h2 id="we-want-this-tool-to-be-valuable-to-analysts-who-want-to-assess-national-expenditures-in-different-charitable-issue-areas-in-the-future-you-will-be-able-to-look-up-ein-39-s-for-batch-processing-by-various-issue-categorizations-as-well-as-region">We want this tool to be valuable to analysts who want to assess national expenditures in different charitable issue areas. In the future, you will be able to look up ein&rsquo;s for batch processing by various issue categorizations, as well as region.</h2>
+
+<h1 id="data">Data</h1>
+
+<p>Data will be formated as a JSON, with the keys listed below. </p>
+
+<h2 id="zip">zip</h2>
+
+<p>9-digit zip code for the organization</p>
+
+<h2 id="irs_code_subsection">irs_code_subsection</h2>
+
+<p>Category under which an organization is exempt. Taken from the 501&copy; of the Internal Revenue Code of 1986.</p>
+
+<p><a href="https://www.irs.gov/pub/irs-soi/eo_info.pdf">A list of subsection codes is available here:</a></p>
+
+<h2 id="classification_code_">classification_code_</h2>
+
+<p>There are four classification code variables, because each organization can have up to four listed. 0 is null. </p>
+
+<p>Classification codes are a sub-classification of IRS subsection codes. Note that the meaning of the categorical value depends on the organization&rsquo;s subsection code, so two groups with a classification code of 1, but with different subsection codes, do not fall into the same category. Up to four classification codes are listed. 0 means that there is no code listed.</p>
+
+<p><a href="https://www.irs.gov/pub/irs-soi/eo_info.pdf">A list of classification codes</a>, and their corresponding subsection codes, can be found <a href="https://www.irs.gov/pub/irs-soi/eo_info.pdf">here</a>. </p>
+
+<h2 id="affiliation_code">affiliation_code</h2>
+
+<p>The affiliation code indicates an organization&rsquo;s membership in an geographical groupings, at the national, regional, or geographic level, and its ranking within that grouping&rsquo;s hierarchy.</p>
+
+<table><thead>
+<tr>
+<th>Code</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>1</td>
+<td>Central organization, with no group exemption</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Intermediate organization. Not the most central organization, but not at the most local level of geographical aggregation</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Independent. Organization is not associated with a geographical grouping, or is an independent auxiliary</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Central organization,  that is a parent (group ruling), but is not a church or 501&copy;(1) organization.</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Exempt organization at an intermediate level of a geographical grouping of organizations.</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Central organization that is a parent (group ruling) and is a church or 501&copy;(1) organization</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Subordinate group in a group ruling</td>
+</tr>
+</tbody></table>
+
+<h2 id="ruling_date">ruling_date</h2>
+
+<p>Year and month (YYYYMM) that the organization was ruled or determination letter recognizing the group as a non-profit entity.</p>
+
+<h2 id="deductibility_code">deductibility_code</h2>
+
+<p>Indicates whether contributions to the organization are tax deductible
+Code | Description
+&mdash;&mdash;&mdash;- | &mdash;&mdash;-
+1|Contributions are deductible 
+2|Contributions are not deductible
+4|Contributions are deductible by treaty (foreign organizations)</p>
+
+<h2 id="ntee">ntee</h2>
+
+<p>Full NTEE code, used to classify exempt organizations in terms of their primary exempt activity. The first digit describes activities in support of nonprofit organizations. The fourth digit defines classification of the organization</p>
+
+<p><a href="https://www.irs.gov/pub/irs-soi/eo_info.pdf">Classifications can be found here:</a></p>
+
+<h2 id="ntee_category">ntee_category</h2>
+
+<p>Taken from the NTEE first letter, the ntee category is a broad categorization of the organization&rsquo;s primary activity. Examples include education, or health. </p>
+
+<p><a href="https://www.irs.gov/pub/irs-soi/eo_info.pdf">A full table of NTEE categories</a>, with their associated NTEE sub-categories, is available <a href="https://www.irs.gov/pub/irs-soi/eo_info.pdf">here.</a> </p>
+
+<h2 id="foundation_code_specific">foundation_code_specific</h2>
+
+<p>Foundation codes are another categorization of organizations, relating to their tax exempt status. </p>
+
+<table><thead>
+<tr>
+<th>Code</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>00</td>
+<td>All non-501&copy;(3) organizations</td>
+</tr>
+<tr>
+<td>02</td>
+<td>Private operating foundations exempt from paying excise taxes on investment income</td>
+</tr>
+<tr>
+<td>03</td>
+<td>Private operating foundation (other)</td>
+</tr>
+<tr>
+<td>04</td>
+<td>Private non-operating foundation</td>
+</tr>
+<tr>
+<td>09</td>
+<td>Suspense</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Church 170(b)(1)(i)</td>
+</tr>
+<tr>
+<td>11</td>
+<td>School 170(b)(1)(ii)</td>
+</tr>
+<tr>
+<td>12</td>
+<td>Hospital or other medical research organization 170(b)(1)(iii)</td>
+</tr>
+<tr>
+<td>13</td>
+<td>Organization which operates for beneit of college or university and is owned or operated by a government unit 170(b)(1)(iv)</td>
+</tr>
+<tr>
+<td>14</td>
+<td>Governmental unit 170(b)(1)(v)</td>
+</tr>
+<tr>
+<td>15</td>
+<td>Organization which recieves a substantial part of its support from a governmental unit or general public 170(b)(1)(vi)</td>
+</tr>
+<tr>
+<td>16</td>
+<td>Organization that normally receives no more than one-third of its support from gross investment income and unrelated business income and at the same time more than one-third of its support from contributions, fees, and gross receipts related to exempt purposes. 509(a)(2)</td>
+</tr>
+<tr>
+<td>17</td>
+<td>Organizations operated solely for the benefit of and in conjunction with organizations described with foundation codes 10-16, 509(a)(3)</td>
+</tr>
+<tr>
+<td>18</td>
+<td>Organizations organized and operated to test for public safety 509(a)(4)</td>
+</tr>
+<tr>
+<td>21</td>
+<td>509(a)(3) Type I</td>
+</tr>
+<tr>
+<td>22</td>
+<td>509(a)(3) Type II</td>
+</tr>
+<tr>
+<td>23</td>
+<td>509(a)(3) Type III functionally integrated</td>
+</tr>
+<tr>
+<td>24</td>
+<td>509(a)(3) Type III not functionally integrated</td>
+</tr>
+</tbody></table>
+
+<h2 id="activity_code">activity_code</h2>
+
+<p>Code reflecting the organization&rsquo;s purpose, activities, operations, or type. Note that this code was replaced by the NTEE, but exists for groups existing prior to 1995. Wher it exists, it has not been updated since 1994.</p>
+
+<p><a href="https://www.irs.gov/pub/irs-soi/eo_info.pdf">A full table of activity codes</a> is available <a href="https://www.irs.gov/pub/irs-soi/eo_info.pdf">here.</a> </p>
+
+<h2 id="organization_code">organization_code</h2>
+
+<p>The organization type code indicates the type of organization</p>
+
+<table><thead>
+<tr>
+<th>Code</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>1</td>
+<td>Corporation</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Trust</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Co-operative</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Partnership</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Association</td>
+</tr>
+</tbody></table>
+
+<h2 id="last_return">last_return</h2>
+
+<p>The tax period corresponding with the latest return filed. (YYYYMM)</p>
+
+<h2 id="accounting_end">accounting_end</h2>
+
+<p>The accounting period end is the last month of the organization&rsquo;s reporting period/fiscal year</p>
+
+<h2 id="filing_requirement">filing_requirement</h2>
+
+<p>The filing requirement indicates the the documents that the organization is required to file. </p>
+
+<table><thead>
+<tr>
+<th>Code</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>01</td>
+<td>990 (all other) or 990EZ return</td>
+</tr>
+<tr>
+<td>02</td>
+<td>990 - Required to file Form 990-N - Income less than $25,000 per year</td>
+</tr>
+<tr>
+<td>03</td>
+<td>990 - Group return</td>
+</tr>
+<tr>
+<td>04</td>
+<td>990 - Required to file Form 990-BL, Black Lung Trusts</td>
+</tr>
+<tr>
+<td>06</td>
+<td>990 - Not required to file (church)</td>
+</tr>
+<tr>
+<td>07</td>
+<td>990 - Government 501&copy;(1)</td>
+</tr>
+<tr>
+<td>13</td>
+<td>990 - Not required to file (religious organization)</td>
+</tr>
+<tr>
+<td>14</td>
+<td>990 - Not required to file (instrumentalities of states or political subdivisions)</td>
+</tr>
+<tr>
+<td>00</td>
+<td>990 - Not required to file (all other)</td>
+</tr>
+</tbody></table>
+
+<h2 id="pf_return_requirement">pf_return_requirement</h2>
+
+<p>This is a boolean indicating whether the organization is required to fill out a 990-PF return.</p>
+
+<h2 id="asset_code">asset_code</h2>
+
+<p>The asset code is a categorical indicator of the shown on the organization&rsquo;s most recent Form 990 series return</p>
+
+<table><thead>
+<tr>
+<th>Code</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>0</td>
+<td>$0</td>
+</tr>
+<tr>
+<td>1</td>
+<td>$1 to $9,999</td>
+</tr>
+<tr>
+<td>2</td>
+<td>$10,000 to $24,999</td>
+</tr>
+<tr>
+<td>3</td>
+<td>$25,000 to $99,999</td>
+</tr>
+<tr>
+<td>4</td>
+<td>$100,000 to $499,999</td>
+</tr>
+<tr>
+<td>5</td>
+<td>$500,000 to $999,999</td>
+</tr>
+<tr>
+<td>6</td>
+<td>$1,000,000 to $4,999,999</td>
+</tr>
+<tr>
+<td>7</td>
+<td>$5,000,000 to $9,999,999</td>
+</tr>
+<tr>
+<td>8</td>
+<td>$10,000,000 to $49,999,999</td>
+</tr>
+<tr>
+<td>9</td>
+<td>$50,000,000 or more</td>
+</tr>
+</tbody></table>
+
+<h2 id="asset_amount">asset_amount</h2>
+
+<p>The dollar amount of assets reported on the organization&rsquo;s latest 990 series return</p>
+
+<h2 id="income_code">income_code</h2>
+
+<p>Categorical indicator of an organization&rsquo;s income, according to their most recent Form 990 series return. Amount of income, generated by adding the elements of form 990 Part VIII or 990EZ Part 1. </p>
+
+<p>Specifically: Income is generated using:</p>
+
+<p>Part VIII, Line 1h(A), Contributions/Gifts + Part VIII Line 2g(A), Program Revenue + Part VIII Line 3(A), Investment Income + Party VIII Line 4(A) Tax Exempt Bond Proceeds + Part VIII, Line 5(A), Royalties income + Part VIII line 6d(A), Rental Income + Party VIII, Line 7d(A), Net Gain/Loss amount + Part VIII Line 8c(A), Net fundraising + Part VIII, Line 9c(A), Net Gaming + Part VIII, Line 10c(A), Net Inventory sales + part VIII Line 11e(A), Miscelaneous Revenue. </p>
+
+<p>On Form 990-EZ, Income Amount is a computer generated amount using:</p>
+
+<p>Part I Line 1, Total Contributions/Gifts +  Part I Line 2, Program Services amount + Part I Line 2, Dues and Assessments + Part I Line 4, Investment Income + Part I Line 5c, Sale of Assets + Part I Line 6c, Net Income fundraising + Part I Line 7c, Gross Profit + Part I Line 8, Other Revenue.</p>
+
+<p>The categorical breakdown is:</p>
+
+<table><thead>
+<tr>
+<th>Code</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>0</td>
+<td>$0</td>
+</tr>
+<tr>
+<td>1</td>
+<td>$1 to $9,999</td>
+</tr>
+<tr>
+<td>2</td>
+<td>$10,000 to $24,999</td>
+</tr>
+<tr>
+<td>3</td>
+<td>$25,000 to $99,999</td>
+</tr>
+<tr>
+<td>4</td>
+<td>$100,000 to $499,999</td>
+</tr>
+<tr>
+<td>5</td>
+<td>$500,000 to $999,999</td>
+</tr>
+<tr>
+<td>6</td>
+<td>$1,000,000 to $4,999,999</td>
+</tr>
+<tr>
+<td>7</td>
+<td>$5,000,000 to $9,999,999</td>
+</tr>
+<tr>
+<td>8</td>
+<td>$10,000,000 to $49,999,999</td>
+</tr>
+<tr>
+<td>9</td>
+<td>$50,000,000 or more</td>
+</tr>
+</tbody></table>
+
+<h2 id="income_amount">income_amount</h2>
+
+<p>Amount of income, generated by adding the elements of form 990 Part VIII or 990EZ Part 1. Specifically, Income is generated using:</p>
+
+<p>Part VIII, Line 1h(A), Contributions/Gifts + Part VIII Line 2g(A), Program Revenue + Part VIII Line 3(A), Investment Income + Party VIII Line 4(A) Tax Exempt Bond Proceeds + Part VIII, Line 5(A), Royalties income + Part VIII line 6d(A), Rental Income + Party VIII, Line 7d(A), Net Gain/Loss amount + Part VIII Line 8c(A), Net fundraising + Part VIII, Line 9c(A), Net Gaming + Part VIII, Line 10c(A), Net Inventory sales + part VIII Line 11e(A), Miscelaneous Revenue. </p>
+
+<p>On Form 990-EZ, Income Amount is a computer generated amount using:</p>
+
+<p>Part I Line 1, Total Contributions/Gifts +  Part I Line 2, Program Services amount + Part I Line 2, Dues and Assessments + Part I Line 4, Investment Income + Part I Line 5c, Sale of Assets + Part I Line 6c, Net Income fundraising + Part I Line 7c, Gross Profit + Part I Line 8, Other Revenue.</p>
+
+<h2 id="revenue_990">revenue_990</h2>
+
+<p>Revenue reported in form 990, Part VIII Line 12(A), or 990-EZ Part I Line 9. </p>
+
+<h2 id="tax_year">tax_year</h2>
+
+<p>The tax year of the most recent return</p>
+
+<h2 id="organization_name">organization_name</h2>
+
+<p>Name under which the organization files</p>
+
+<h2 id="doing_business_as">doing_business_as</h2>
+
+<p>Organizations can specify up to three aliases</p>
+
+<h2 id="gross_receipts_under_25k">gross_receipts_under_25k</h2>
+
+<p>Boolean, did the organization receive less than $25,000 during the most recent reporting period</p>
+
+<h2 id="website_url">website_url</h2>
+
+<p>The organization&rsquo;s website_url</p>
+
+<h2 id="terminated">terminated</h2>
+
+<p>Boolean, indicating whether the group has been terminated</p>
+
+<h2 id="officer_x">officer_X</h2>
+
+<p>Name and address of an officer from the organizationThese include:</p>
+
+<ul>
+<li>name</li>
+<li>address_line_1</li>
+<li>address_line 2</li>
+<li>address_city</li>
+<li>address_province</li>
+<li>address_state_id</li>
+<li>address_postal_code</li>
+<li>address_country</li>
+</ul>
+
+<h2 id="organization_address_x">organization_address_X</h2>
+
+<p>Address information for the organization. These include:</p>
+
+<ul>
+<li>line_1</li>
+<li>line_2</li>
+<li>city</li>
+<li>province</li>
+<li>state_id</li>
+<li>postal_code</li>
+<li>country</li>
+</ul>
+
+<h2 id="legal_name">legal_name</h2>
+
+<p>Organization&rsquo;s legal name</p>
+
+<h2 id="city">city</h2>
+
+<p>City where the organization is headquarted</p>
+
+<h2 id="state_id">state_id</h2>
+
+<p>State where the organization is headquartered</p>
+
+<h2 id="country">country</h2>
+
+<p>Country where the organization is headquartered</p>
+
+<h2 id="status">status</h2>
+
+<p>Categorical indicator of whether donations are tax deductible 
+Code | Description
+&mdash;&mdash;&mdash;- | &mdash;&mdash;-
+1|Contributions are deductible 
+2|Contributions are not deductible
+4|Contributions are deductible by treaty (foreign organizations)</p>
+
+<h2 id="revocation_date">revocation_date</h2>
+
+<p>The date the organization&rsquo;s status was automatically revoked because of failure to fill out a return</p>
+
+<h2 id="revocation_posting_date">revocation_posting_date</h2>
+
+<p>Date that the group&rsquo;s revocation was posted. </p>
+
+          <h1 id="troubleshooting-errors">Troubleshooting Errors</h1>
+
+<p>Here is a list of error codes you may receive, and what they mean:</p>
+
+<table><thead>
+<tr>
+<th>Error Code</th>
+<th>Meaning</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>400</td>
+<td>Bad Request &ndash; Your fault, check your syntax against the documentation and try again.</td>
+</tr>
+<tr>
+<td>401</td>
+<td>Unauthorized User&ndash; Make sure your key is correct.</td>
+</tr>
+<tr>
+<td>403</td>
+<td>Forbidden &ndash; You cannot access this data</td>
+</tr>
+<tr>
+<td>404</td>
+<td>Not Found &ndash; We could not find your request</td>
+</tr>
+<tr>
+<td>418</td>
+<td>I&rsquo;m a teapot</td>
+</tr>
+<tr>
+<td>429</td>
+<td>Too Many Requests &ndash; Our servers are overworked, please slow down</td>
+</tr>
+<tr>
+<td>500</td>
+<td>Internal Server Error &ndash; Our Fault. Wait a while, try again, and if it still doesn&rsquo;t work, contact us to let us know.</td>
+</tr>
+</tbody></table>
+
+      </div>
+      <div class="dark-box">
+          <div class="lang-selector">
+                <a href="#" data-language-name="python">python</a>
+                <a href="#" data-language-name="ruby">ruby</a>
+          </div>
+      </div>
+    </div>
+  </body>
+</html>
